@@ -1,49 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Filter Gallery</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Filter Gallery with Lazy Loading</title>
 
   <style>
 
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial;
+    }
+
     body{
-      font-family: Arial;
+      background:#f5f5f5;
       padding:20px;
     }
 
-    .buttons{
+    h1{
+      text-align:center;
       margin-bottom:20px;
     }
 
-    .buttons button{
+    .filters{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:30px;
+    }
+
+    .filters button{
       padding:10px 20px;
-      margin:5px;
       border:none;
       background:black;
       color:white;
-      cursor:pointer;
       border-radius:5px;
+      cursor:pointer;
     }
 
     .gallery{
-      display:flex;
-      flex-wrap:wrap;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
       gap:20px;
     }
 
-    .image-box{
-      width:250px;
+    .card{
+      background:white;
+      padding:10px;
+      border-radius:10px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.1);
     }
 
-    .image-box img{
+    .card img{
       width:100%;
+      height:250px;
+      object-fit:cover;
       border-radius:10px;
     }
 
     .download-btn{
-      display:inline-block;
+      display:block;
       margin-top:10px;
-      padding:8px 15px;
-      background:#333;
+      text-align:center;
+      padding:10px;
+      background:black;
       color:white;
       text-decoration:none;
       border-radius:5px;
@@ -51,68 +74,66 @@
 
   </style>
 </head>
-
 <body>
 
-  <div class="buttons">
+  <h1>Event Gallery</h1>
+
+  <div class="filters">
     <button onclick="filterImages('all')">All</button>
     <button onclick="filterImages('wedding')">Wedding</button>
     <button onclick="filterImages('birthday')">Birthday</button>
     <button onclick="filterImages('concert')">Concert</button>
   </div>
 
-  <div class="gallery">
-
-    <!-- Wedding -->
-    <div class="image-box wedding">
-      <img src="wedding1.jpg">
-      <a href="wedding1.jpg" download class="download-btn">
-        Download
-      </a>
-    </div>
-
-    <!-- Birthday -->
-    <div class="image-box birthday">
-      <img src="birthday1.jpg">
-      <a href="birthday1.jpg" download class="download-btn">
-        Download
-      </a>
-    </div>
-
-    <!-- Concert -->
-    <div class="image-box concert">
-      <img src="concert1.jpg">
-      <a href="concert1.jpg" download class="download-btn">
-        Download
-      </a>
-    </div>
-
-    <!-- Another Wedding -->
-    <div class="image-box wedding">
-      <img src="wedding2.jpg">
-      <a href="wedding2.jpg" download class="download-btn">
-        Download
-      </a>
-    </div>
-
-  </div>
+  <div class="gallery" id="gallery"></div>
 
   <script>
 
+    const gallery = document.getElementById("gallery");
+
+    const categories = ["wedding", "birthday", "concert"];
+
+    // CREATE 120 RANDOM IMAGES
+    for(let i = 1; i <= 120; i++){
+
+      const category = categories[Math.floor(Math.random() * categories.length)];
+
+      const card = document.createElement("div");
+      card.className = `card ${category}`;
+
+      // RANDOM IMAGE URL
+      const imageUrl = `https://picsum.photos/400/300?random=${i}`;
+
+      card.innerHTML = `
+        <img 
+          src="${imageUrl}" 
+          loading="lazy"
+          alt="Image ${i}"
+        >
+
+        <a href="${imageUrl}" download class="download-btn">
+          Download
+        </a>
+      `;
+
+      gallery.appendChild(card);
+    }
+
+    // FILTER FUNCTION
     function filterImages(category){
 
-      let images = document.querySelectorAll('.image-box');
+      const cards = document.querySelectorAll(".card");
 
-      images.forEach(function(image){
+      cards.forEach(card => {
 
-        if(category === 'all'){
-          image.style.display = 'block';
+        if(category === "all"){
+          card.style.display = "block";
         }
-        else if(image.classList.contains(category)){
-          image.style.display = 'block';
+        else if(card.classList.contains(category)){
+          card.style.display = "block";
         }
         else{
-          image.style.display = 'none';
+          card.style.display = "none";
         }
 
       });
